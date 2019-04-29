@@ -1,0 +1,19 @@
+---
+# defaults file for omc cloudagent configuration
+# version
+omc_agent_version: 1.40.0
+omc_url: 
+tenant_name: 
+agent_registration_key:
+omc_agent_base: /opt/omc/agent
+additional_gateways:
+omc_agent_packages:
+  - bc
+  - setarch
+  - jq
+
+### Constants
+_omc_user:
+  user: oracle
+  group: oinstall
+  users_home: /home
