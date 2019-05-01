@@ -2,7 +2,7 @@
 # This role conains tasks to deploy the Oracle Management Cloud Agent on Linux x86-64 machines
 
 - name: omc cloudagent image file check
-  command: ls files/cloudagent_linux.x64_{{ omc_agent_version }}.zip
+  command: ls files/cloudagent_linux.x64_{{ omc_agent.version }}.zip
   connection: local
   sudo: false
   register: ls_omc_cloudagent_image
@@ -12,29 +12,39 @@
     - install
 
 - name: omc cloudagent image file missing
-  fail: msg="omc cloud agent image file missing.  please place cloudagent_linux.x64_{{ omc_agent_version }} in the ./files directory."
+  fail:
+    msg="omc cloud agent image file missing.  please place cloudagent_linux.x64_{{ omc_agent.version }} in the ./files directory."
   when: ls_omc_cloudagent_image.stdout !=
-        "files/cloudagent_linux.x64_{{ omc_agent_version }}.zip"
+        "files/cloudagent_linux.x64_{{ omc_agent.version }}.zip"
   tags:
     - check
     - install
 
 - name: installing dependencies
-  yum: name={{ item }} state=present
-  with_items: omc_agent_packages
+  yum:
+    name={{ item }}
+    state=present
+  with_items: omc_agent.packages
   tags: install
 
 - name: creating omc cloudagent group
-  group: name={{ omc_user.group }}  gid={{ omc_user.gid }}state=present
+  group:
+    name={{ omc_agent.group }}
+    gid={{ omc_agent.gid }}
+    state=present
   tags: user
 
 - name: creating omc cloudagent user
-  user: name={{ omc_user.user }} group={{ omc_user.group }} uid={{ omc_user.uid }} state=present
+  user:
+    name={{ omc_agent.user }}
+    group={{ omc_agent.group }}
+    uid={{ omc_agent.uid }}
+    state=present
   tags: user
 
 - name: configure ulimits
   pam_limits:
-    domain: "{{ omc_user.user }}"
+    domain: "{{ omc_agent.user }}"
     limit_type: "{{item.limit_type}}"
     limit_item: "{{item.limit_item}}"
     value: "{{item.value}}"
@@ -50,16 +60,25 @@
   tags: user-ulimits
 
 - name: creating base directory
-  file: path={{ omc_agent_base }} state=directory owner={{ omc_user.user }} group={{ omc_user.group }}
+  file: |
+    path={{ omc_agent.base_dir }}
+    state=directory
+    owner={{ omc_agent.user }}
+    group={{ omc_agent.group }}
   tags: install
 
 - name: creating temporary directory
-  file: path=/tmp/ansible_omc_cloudagent state=directory owner={{ omc_user.user }} group={{ omc_user.group }}
+  file: |
+    path=/tmp/ansible_omc_cloudagent
+    state=directory
+    owner={{ omc_agent.user }}
+    group={{ omc_agent.group }}
   tags: install
 
 - name: uploading omc cloudagent installer
-  unarchive: src=files/cloudagent_linux.x64_{{ omc_agent_version }}.zip
-             dest=/tmp/ansible_omc_cloudagent
+  unarchive: |
+    src=files/cloudagent_linux.x64_{{ omc_agent.version }}.zip
+    dest=/tmp/ansible_omc_cloudagent
   tags: install
 
 - name: installing omc cloudagent
@@ -67,7 +86,7 @@
     /tmp/ansible_omc_cloudagent/agentInstall.sh \
       TENANT_NAME={{ tenant_name }} \
       AGENT_REGISTRATION_KEY={{ agent_registration_key}} \
-      AGENT_BASE_DIRECTORY={{ omc_agent_base }} \
+      AGENT_BASE_DIRECTORY={{ omc_agent.base }} \
       OMC_URL={{ omc_url }} \
       GATEWAY_HOST={{ gateway_host }} \
       GATEWAY_PORT={{ gateway_port }} \
@@ -75,14 +94,79 @@
       REINSTALL={{ agent_reinstall }}
   args:
     chdir: /tmp/ansible_omc_cloudagent
-  sudo_user: "{{ omc_user.user }}"
+  sudo_user: "{{ omc_agent.user }}"
   tags: install
 
 - name: removing omc cloudagent installer
-  file: path=/tmp/ansible_omc_cloudagent state=absent
+  file:
+    path=/tmp/ansible_omc_cloudagent
+    state=absent
   tags: install
 
 - name: executing root.sh configuration script
-  shell: "{{ omc_agent_base }}/core/{{ omc_agent_version }}/root.sh"
+  shell: "{{ omc_agent.base }}/core/{{ omc_agent.version }}/root.sh"
   tags: install
 
+# - name: copy init.d script
+#     tags: post-install
+#     copy:
+#       src: "{{ files_path }}/{{ omc_agent.init_script }}"
+#       dest: /etc/init.d/omc-agent
+#       owner: root
+#       group: root
+#       mode: 0744
+
+#   - name: set script to start at boot
+#     shell: "chkconfig --add omc-agent && chkconfig --level 2345 omc-agent on"
+#     become: yes
+#     become_user: root
+#     tags: post-install
+
+- name: set up default permissions for log fetching (/var/log)
+  shell: "setfacl -d -m u:{{ omc_agent.user }}:r /var/log"
+  become: yes
+  become_user: root
+  tags: permissions
+
+- name: set up default permissions for log fetching (/var/log/audit)
+  shell: "setfacl -d -m u:{{ omc_agent.user }}:r /var/log/audit"
+  become: yes
+  become_user: root
+  tags: permissions
+
+- name: set up permissions for log fetching (/var/log/yum.log*)
+  shell: "setfacl -m u:{{ omc_agent.user }}:r /var/log/yum.log*"
+  become: yes
+  become_user: root
+  tags: permissions
+- name: set up permissions for log fetching (/var/log/message*)
+  shell: "setfacl -m u:{{ omc_agent.user }}:r /var/log/message*"
+  become: yes
+  become_user: root
+  tags: permissions
+- name: set up permissions for log fetching (/var/log/audit/audit*)
+  shell: "setfacl -m u:{{ omc_agent.user }}:r /var/log/audit/audit*"
+  become: yes
+  become_user: root
+  tags: permissions
+- name: set up permissions for log fetching (/var/log/secure*)
+  shell: "setfacl -m u:{{ omc_agent.user }}:r /var/log/secure*"
+  become: yes
+  become_user: root
+  tags: permissions
+- name: set up permissions for log fetching (/var/log/secure*)
+  shell: "setfacl -m u:{{ omc_agent.user }}:r /var/log/maillog*"
+  become: yes
+  become_user: root
+  tags: permissions
+
+- name: set up permissions for log fetching (/var/log/cell*)
+  shell: "setfacl -m u:{{ omc_agent.user }}:r /var/log/cell*"
+  become: yes
+  become_user: root
+  tags: permissions
+- name: set up permissions for log fetching (/var/log/asmaudit*)
+  shell: "setfacl -m u:{{ omc_agent.user }}:r /var/log/asmaudit*"
+  become: yes
+  become_user: root
+  tags: permissions
