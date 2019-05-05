@@ -53,7 +53,7 @@
     - { limit_type: '-', limit_item: 'nproc', value: 400000 }
     - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
     - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
-  tags: user-ulimits
+  tags: user
 
 - name: reload settings from all system configuration files
   shell: sysctl --system
