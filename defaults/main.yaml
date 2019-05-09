@@ -6,7 +6,7 @@ omc_agent_uid: 1001
 omc_agent_gid: 1001
 omc_agent_group: oinstall
 omc_agent_users_home: /home/oracle
-omc_agent_version: 1.40.0
+omc_agent_version: 1.41.0
 omc_agent_omc_url:
 omc_agent_gateway_host:
 omc_agent_gateway_port:
