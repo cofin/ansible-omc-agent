@@ -1,6 +1,10 @@
 *.retry
 .vault_pass
 vault
+vaultpass
+.env
+tmp/
+cp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
