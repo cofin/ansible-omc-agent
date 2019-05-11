@@ -98,7 +98,8 @@
       REINSTALL={{ agent_reinstall }}
   args:
     chdir: /tmp/ansible_omc_cloudagent
-  sudo_user: "{{ omc_agent_user }}"
+  become: yes
+  become_user: "{{ omc_agent_user }}"
   tags: install
   when: existing_omc_install.stat.exists == False
 
