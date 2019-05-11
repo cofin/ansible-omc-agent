@@ -16,9 +16,9 @@
 
 - name: Installing dependencies
   yum:
-    name={{ item }}
+    name={{ omc_agent_packages }}
     state=present
-  with_items: omc_agent_packages
+  when: install_os_packages and ansible_os_family == 'RedHat'
   tags: install
 
 - name: Creating OMC cloudagent group
