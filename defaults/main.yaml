@@ -1,6 +1,6 @@
 ---
 # defaults file for omc cloudagent configuration
-### Constants
+omc_agent_install: true
 omc_agent_user: oracle
 omc_agent_uid: 1001
 omc_agent_gid: 1001

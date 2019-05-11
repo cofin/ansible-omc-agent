@@ -11,7 +11,7 @@
     - check
     - install
 
-- name: omc cloudagent image file missing
+- name: OMC cloudagent image files missing
   fail:
     msg="omc cloud agent image file missing.  please place cloudagent_linux.x64_{{ omc_agent_version }} in the ./files directory."
   when: ls_omc_cloudagent_image.stdout !=
@@ -20,21 +20,21 @@
     - check
     - install
 
-- name: installing dependencies
+- name: Installing dependencies
   yum:
     name={{ item }}
     state=present
   with_items: omc_agent_packages
   tags: install
 
-- name: creating omc cloudagent group
+- name: Creating OMC cloudagent group
   group:
     name={{ omc_agent_group }}
     gid={{ omc_agent_gid }}
     state=present
   tags: user
 
-- name: creating omc cloudagent user
+- name: Creating OMC cloudagent user
   user:
     name={{ omc_agent_user }}
     group={{ omc_agent_group }}
@@ -42,7 +42,8 @@
     state=present
   tags: user
 
-- name: configure ulimits
+
+- name: Configure ulimits for OMC user
   pam_limits:
     domain: "{{ omc_agent_user }}"
     limit_type: "{{item.limit_type}}"
@@ -55,9 +56,14 @@
     - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
   tags: user
 
-- name: reload settings from all system configuration files
+- name: Reload settings & limits from configuraltion file
   shell: sysctl --system
   tags: user-ulimits
+
+- name: Check for an existing installation of OMC cloud agent
+  stat:
+    path: "{{ omc_agent_base_dir }}/agent_inst/bin/omcli"
+  register: existing_omc_install
 
 - name: creating base directory
   file:
@@ -66,6 +72,7 @@
     owner={{ omc_agent_user }}
     group={{ omc_agent_group }}
   tags: install
+  when: existing_omc_install.stat.exists == False
 
 - name: creating temporary directory
   file:
@@ -74,12 +81,16 @@
     owner={{ omc_agent_user }}
     group={{ omc_agent_group }}
   tags: install
+  when: existing_omc_install.stat.exists == False
+
 
 - name: uploading omc cloudagent installer
   unarchive: |
     src=files/cloudagent_linux.x64_{{ omc_agent_version }}.zip
     dest=/tmp/ansible_omc_cloudagent
   tags: install
+  when: existing_omc_install.stat.exists == False
+
 
 - name: installing omc cloudagent
   shell: |
@@ -96,6 +107,8 @@
     chdir: /tmp/ansible_omc_cloudagent
   sudo_user: "{{ omc_agent_user }}"
   tags: install
+  when: existing_omc_install.stat.exists == False
+
 
 - name: removing omc cloudagent installer
   file:
@@ -106,6 +119,8 @@
 - name: executing root.sh configuration script
   shell: "{{ omc_agent_base }}/core/{{ omc_agent_version }}/root.sh"
   tags: install
+  when: existing_omc_install.stat.exists == False
+
 
 - name: copy init.d script
   copy:

@@ -2,9 +2,11 @@
 .vault_pass
 vault
 vaultpass
+.vaultpass
 .env
 tmp/
 cp/
+files/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
