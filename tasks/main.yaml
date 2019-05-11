@@ -92,7 +92,7 @@
       TENANT_NAME={{ omc_agent_tenant_name }} \
       AGENT_REGISTRATION_KEY={{ omc_agent_registration_key}} \
       AGENT_BASE_DIRECTORY={{ omc_agent_base_dir }} \
-      OMC_URL={{ omc_agent_url }} \
+      OMC_URL={{ omc_agent_omc_url }} \
       GATEWAY_HOST={{ omc_agent_gateway_host }} \
       GATEWAY_PORT={{ omc_agent_gateway_port }} \
       ADDITIONAL_GATEWAYS={{ omc_agent_additional_gateways }} \
