@@ -2,7 +2,7 @@
 # This role conains tasks to deploy the Oracle Management Cloud Agent on Linux x86-64 machines
 
 - name: Check for cloud agent files.
-  local_action: stat path=files/cloudagent_linux.x64_{{ omc_agent_version }}.zip
+  local_action: stat path="{{ role_path }}/files/cloudagent_linux.x64_{{ omc_agent_version }}.zip"
   become: false
   register: ls_omc_cloudagent_image
 
@@ -119,7 +119,7 @@
 
 - name: Copy templated initialization script
   template:
-    src: templates/omc-cloudagent-initscript.j2
+    src: "{{ role_path }}/templates/omc-cloudagent-initscript.j2"
     dest: /etc/init.d/omc-agent
     owner: root
     group: root
