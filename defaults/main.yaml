@@ -14,6 +14,7 @@ omc_agent_tenant_name:
 omc_agent_registration_key:
 omc_agent_base_dir: /opt/omc/agent
 omc_agent_additional_gateways:
+omc_agent_reinstall: false
 omc_agent_yum_packages:
   - bc
   - setarch

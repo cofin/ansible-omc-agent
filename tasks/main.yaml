@@ -96,7 +96,7 @@
       GATEWAY_HOST={{ omc_agent_gateway_host }} \
       GATEWAY_PORT={{ omc_agent_gateway_port }} \
       ADDITIONAL_GATEWAYS={{ omc_agent_additional_gateways }} \
-      REINSTALL={{ omc_agent_agent_reinstall }}
+      REINSTALL={{ omc_agent_reinstall }}
   args:
     chdir: /tmp/ansible_omc_cloudagent
   become: yes
