@@ -16,7 +16,7 @@
 
 - name: Installing dependencies
   yum:
-    name={{ omc_agent_packages }}
+    name={{ omc_agent_yum_packages }}
     state=present
   when: install_os_packages and ansible_os_family == 'RedHat'
   tags: install
