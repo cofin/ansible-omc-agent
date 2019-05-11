@@ -117,13 +117,13 @@
   when: existing_omc_install.stat.exists == False
 
 
-- name: copy init.d script
-  copy:
-    src: "{{ files_path }}/{{ omc_agent_init_script }}"
+- name: Copy templated initialization script
+  template:
+    src: templates/omc-cloudagent-initscript.j2
     dest: /etc/init.d/omc-agent
     owner: root
     group: root
-    mode: 0744
+    mode: 0740
   tags: install
 
 - name: set script to start at boot
