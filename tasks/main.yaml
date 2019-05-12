@@ -87,7 +87,7 @@
 
 - name: copy agent response files
   tags: install
-  copy:
+  tempate:
     src: "{{ role_path }}/templates/agent.rsp.j2"
     dest: /tmp/ansible_omc_cloudagent/agent.rsp
     owner: "{{ omc_agent_user }}"
