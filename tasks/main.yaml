@@ -89,7 +89,7 @@
   tags: install
   copy:
     src: "{{ role_path }}/templates/agent.rsp.j2"
-    dest: /tmp/ansible_omc_agent/agent.rsp
+    dest: /tmp/ansible_omc_cloudagent/agent.rsp
     owner: "{{ omc_agent_user }}"
     group: "{{ omc_agent_group }}"
     mode: 0644
