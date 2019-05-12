@@ -27,5 +27,8 @@ omc_agent_permissions:
   - setfacl -m u:oracle:r /var/log/audit/audit*
   - setfacl -m u:oracle:r /var/log/secure*
   - setfacl -m u:oracle:r /var/log/maillog*
+  - setfacl -m u:oracle:rx /var/log/sa # sar needs execute
   - setfacl -d -m u:oracle:r /var/log
-  - setfacl -d -m u:oracle:r /var/log/audit"
+  - setfacl -d -m u:oracle:r /var/log/audit
+  - setfacl -d -m u:oracle:rx /var/log/sa # sar needs execute
+  - setfacl -d -m u:oracle:rx /var/log/sa/* # sar needs execute
