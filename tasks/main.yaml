@@ -67,13 +67,11 @@
     state=directory
     owner="{{ omc_agent_user }}"
     group="{{ omc_agent_group }}"
-  when: existing_omc_install.stat.exists == False
 
 - name: uploading omc cloudagent installer
   unarchive:
     src="files/cloudagent_linux.x64_{{ omc_agent_version }}.zip"
     dest="{{ omc_agent_tmp_install_dir }}"
-  when: existing_omc_install.stat.exists == False
 
 - name: copy agent response files
   template:
