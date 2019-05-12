@@ -79,7 +79,7 @@
 
 
 - name: uploading omc cloudagent installer
-  unarchive: |
+  unarchive:
     src=files/cloudagent_linux.x64_{{ omc_agent_version }}.zip
     dest=/tmp/ansible_omc_cloudagent
   tags: install
@@ -96,8 +96,7 @@
 
 
 - name: installing omc cloudagent
-  shell: |
-    /tmp/ansible_omc_cloudagent/agentInstall.sh
+  shell: sh ./agentInstall.sh
   args:
     chdir: /tmp/ansible_omc_cloudagent
   become: yes
