@@ -69,7 +69,6 @@
     group={{ omc_agent_group }}
   when: existing_omc_install.stat.exists == False
 
-
 - name: uploading omc cloudagent installer
   unarchive:
     src=files/cloudagent_linux.x64_{{ omc_agent_version }}.zip
@@ -77,7 +76,7 @@
   when: existing_omc_install.stat.exists == False
 
 - name: copy agent response files
-  tempate:
+  template:
     src: "{{ role_path }}/templates/agent.rsp.j2"
     dest: /tmp/ansible_omc_cloudagent/agent.rsp
     owner: "{{ omc_agent_user }}"
