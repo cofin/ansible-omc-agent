@@ -72,6 +72,8 @@
   unarchive:
     src="files/cloudagent_linux.x64_{{ omc_agent_version }}.zip"
     dest="{{ omc_agent_tmp_install_dir }}"
+  when: existing_omc_install.stat.exists == False
+
 
 - name: copy agent response files
   template:
@@ -80,6 +82,7 @@
     owner: "{{ omc_agent_user }}"
     group: "{{ omc_agent_group }}"
     mode: 0644
+  when: existing_omc_install.stat.exists == False
 
 
 - name: installing omc cloudagent
@@ -103,7 +106,7 @@
 
 - name: Copy templated initialization script
   template:
-    src: "{{ role_path }}/templates/omc-cloudagent-initscript.j2"
+    src: "{{ role_path }}/templates/init.omc-agent.j2"
     dest: /etc/init.d/omc-agent
     owner: root
     group: root
