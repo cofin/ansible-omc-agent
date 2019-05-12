@@ -19,23 +19,18 @@
     name={{ omc_agent_yum_packages }}
     state=present
   when: install_os_packages and ansible_os_family == 'RedHat'
-  tags: install
 
 - name: Creating OMC cloudagent group
   group:
     name={{ omc_agent_group }}
     gid={{ omc_agent_gid }}
     state=present
-  tags: user
-
 - name: Creating OMC cloudagent user
   user:
     name={{ omc_agent_user }}
     group={{ omc_agent_group }}
     uid={{ omc_agent_uid }}
     state=present
-  tags: user
-
 
 - name: Configure ulimits for OMC user
   pam_limits:
@@ -52,7 +47,6 @@
 
 - name: Reload settings & limits from configuraltion file
   shell: sysctl --system
-  tags: user-ulimits
 
 - name: Check for an existing installation of OMC cloud agent
   stat:
@@ -65,7 +59,6 @@
     state=directory
     owner={{ omc_agent_user }}
     group={{ omc_agent_group }}
-  tags: install
   when: existing_omc_install.stat.exists == False
 
 - name: creating temporary directory
@@ -74,7 +67,6 @@
     state=directory
     owner={{ omc_agent_user }}
     group={{ omc_agent_group }}
-  tags: install
   when: existing_omc_install.stat.exists == False
 
 
@@ -82,11 +74,9 @@
   unarchive:
     src=files/cloudagent_linux.x64_{{ omc_agent_version }}.zip
     dest=/tmp/ansible_omc_cloudagent
-  tags: install
   when: existing_omc_install.stat.exists == False
 
 - name: copy agent response files
-  tags: install
   tempate:
     src: "{{ role_path }}/templates/agent.rsp.j2"
     dest: /tmp/ansible_omc_cloudagent/agent.rsp
@@ -101,7 +91,6 @@
     chdir: /tmp/ansible_omc_cloudagent
   become: yes
   become_user: "{{ omc_agent_user }}"
-  tags: install
   when: existing_omc_install.stat.exists == False
 
 
@@ -109,11 +98,9 @@
   file:
     path=/tmp/ansible_omc_cloudagent
     state=absent
-  tags: install
 
 - name: executing root.sh configuration script
   shell: "{{ omc_agent_base }}/core/{{ omc_agent_version }}/root.sh"
-  tags: install
   when: existing_omc_install.stat.exists == False
 
 
@@ -124,13 +111,11 @@
     owner: root
     group: root
     mode: 0740
-  tags: install
 
 - name: set script to start at boot
   shell: "chkconfig --add omc-agent && chkconfig --level 2345 omc-agent on"
   become: yes
   become_user: root
-  tags: install
 
 - name: setting agent permissions
   shell: "{{ item }}"
