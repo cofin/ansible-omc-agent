@@ -104,13 +104,21 @@
   become: yes
   become_user: root
 
+
+
 # TO DO: this should be handled better.  rewrite this.
 - name: setting agent permissions
   shell: "{{ item }}"
   with_items: "{{ omc_agent_permissions }}"
   become: yes
   become_user: root
-  tags: permissions
+
+# TO DO: make sure that the daemon is running
+- name: set script to start at boot
+  shell: "/etc/init.d/omc-agent start"
+  become: yes
+  become_user: root
+  ignore_errors: yes
 
 - name: removing omc cloudagent installer
   file:
