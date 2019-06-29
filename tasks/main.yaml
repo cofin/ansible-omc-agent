@@ -98,12 +98,11 @@
     group: root
     mode: 0740
 
-# TO DO: check for daemon module
-- name: set script to start at boot
-  shell: "chkconfig --add omc-agent && chkconfig --level 2345 omc-agent on"
-  become: yes
-  become_user: root
-
+- name: Enable and start at boot
+  service:
+    name: omc-agent
+    state: started
+    enabled: yes
 
 
 # TO DO: this should be handled better.  rewrite this.
